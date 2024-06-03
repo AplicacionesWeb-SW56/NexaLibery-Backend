@@ -18,6 +18,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         base.OnModelCreating(builder);
         
+        // MultimediaContent Context
+        builder.Entity<Podcast>().ToTable("Podcast");
+        builder.Entity<Podcast>().HasKey(l => l.id);
+        builder.Entity<Podcast>().Property(l => l.id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Podcast>().Property(l => l.title).IsRequired().HasMaxLength(1000);
+        builder.Entity<Podcast>().Property(l => l.description).IsRequired().HasMaxLength(1000);
+        builder.Entity<Podcast>().Property(l => l.date)
+            .IsRequired()
+            .HasColumnType("TIMESTAMP")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .ValueGeneratedOnAdd();
+        builder.Entity<Podcast>().Property(l => l.pic).IsRequired().HasMaxLength(1000);
+        builder.Entity<Podcast>().Property(l => l.url).IsRequired().HasMaxLength(1000);
+        builder.Entity<Podcast>().Property(l => l.premium).IsRequired().HasMaxLength(1000);
+        
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
     }
