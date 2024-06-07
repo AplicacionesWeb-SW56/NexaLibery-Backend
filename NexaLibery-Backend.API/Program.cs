@@ -10,31 +10,46 @@ using NexaLibery_Backend.API.Shared.Interfaces.ASP.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+DotNetEnv.Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers( options => options.Conventions.Add(new KebabCaseRouteNamingConvention()));
 
-// Add Database Connection
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 // Configure Database Context and Logging Levels
 
-builder.Services.AddDbContext<AppDbContext>(
-    options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (builder.Environment.IsDevelopment())
     {
-        if (connectionString != null)
-            if (builder.Environment.IsDevelopment())
-                options.UseMySQL(connectionString)
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors();
-            else if (builder.Environment.IsProduction())
-                options.UseMySQL(connectionString)
-                    .LogTo(Console.WriteLine, LogLevel.Error)
-                    .EnableDetailedErrors();    
-    });
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        if(connectionString == null) throw new Exception("No connection string found");
+        options
+            .UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    }
+    else if (builder.Environment.IsProduction())
+    {
+        var connectionString = builder.Configuration.GetConnectionString("ProductionConnection");
+        if(connectionString == null) throw new Exception("No connection string found");
+        connectionString = String.Format(connectionString, 
+            DotNetEnv.Env.GetString("MYSQL_HOST", "cannot find MYSQL_HOST"),
+            DotNetEnv.Env.GetString("MYSQL_USER", "cannot find MYSQL_USER"),
+            DotNetEnv.Env.GetString("MYSQL_PASSWORD", "cannot find MYSQL_PASSWORD"),
+            DotNetEnv.Env.GetString("MYSQL_DATABASE", "cannot find MYSQL_DATABASE"),
+            DotNetEnv.Env.GetString("MYSQL_PORT", "cannot find MYSQL_PORT")
+        );
+        options
+            .UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Error)
+            .EnableDetailedErrors();
+    }
+});
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
