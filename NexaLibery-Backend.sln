@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaLibery-Backend.API", "NexaLibery-Backend.API\NexaLibery-Backend.API.csproj", "{3B890EF1-E34C-4AFA-85BA-D5039B989BD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaLibery-Backend.API.Tests", "NexaLibery-Backend.API.Tests\NexaLibery-Backend.API.Tests.csproj", "{09CC067A-6CF1-4084-9BAA-1919F5BE8ACF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{3B890EF1-E34C-4AFA-85BA-D5039B989BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B890EF1-E34C-4AFA-85BA-D5039B989BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B890EF1-E34C-4AFA-85BA-D5039B989BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09CC067A-6CF1-4084-9BAA-1919F5BE8ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09CC067A-6CF1-4084-9BAA-1919F5BE8ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09CC067A-6CF1-4084-9BAA-1919F5BE8ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09CC067A-6CF1-4084-9BAA-1919F5BE8ACF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
