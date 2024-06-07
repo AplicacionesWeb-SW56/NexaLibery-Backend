@@ -36,19 +36,28 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         var connectionString = builder.Configuration.GetConnectionString("ProductionConnection");
         if(connectionString == null) throw new Exception("No connection string found");
-        connectionString = String.Format(connectionString, 
-            DotNetEnv.Env.GetString("MYSQL_HOST", "cannot find MYSQL_HOST"),
-            DotNetEnv.Env.GetString("MYSQL_USER", "cannot find MYSQL_USER"),
-            DotNetEnv.Env.GetString("MYSQL_PASSWORD", "cannot find MYSQL_PASSWORD"),
-            DotNetEnv.Env.GetString("MYSQL_DATABASE", "cannot find MYSQL_DATABASE"),
-            DotNetEnv.Env.GetString("MYSQL_PORT", "cannot find MYSQL_PORT")
-        );
+        var GetFormatedString = ()=>{
+            string? host = DotNetEnv.Env.GetString("MYSQL_HOST") ?? Environment.GetEnvironmentVariable("MYSQL_HOST");
+            if(host == null) throw new Exception("No MYSQL_HOST found");
+            string? user = DotNetEnv.Env.GetString("MYSQL_USER") ?? Environment.GetEnvironmentVariable("MYSQL_USER");
+            if(user == null) throw new Exception("No MYSQL_USER found");
+            string? password = DotNetEnv.Env.GetString("MYSQL_PASSWORD") ?? Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+            if(password == null) throw new Exception("No MYSQL_PASSWORD found");
+            string? database = DotNetEnv.Env.GetString("MYSQL_DATABASE") ?? Environment.GetEnvironmentVariable("MYSQL_DATABASE");
+            if(database == null) throw new Exception("No MYSQL_DATABASE found");
+            string? port = DotNetEnv.Env.GetString("MYSQL_PORT") ?? Environment.GetEnvironmentVariable("MYSQL_PORT");
+            if(port == null) throw new Exception("No MYSQL_PORT found");
+
+            return String.Format(connectionString, host, user, password, database, port);
+        };
+        connectionString = GetFormatedString();
         options
             .UseMySQL(connectionString)
             .LogTo(Console.WriteLine, LogLevel.Error)
             .EnableDetailedErrors();
     }
 });
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
