@@ -19,8 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="IAM\Domain\Repositories\" />
-      <Folder Include="IAM\Domain\Services\" />
       <Folder Include="IAM\Infrastructure\" />
       <Folder Include="IAM\Interfaces\" />
     </ItemGroup>
