@@ -2,6 +2,7 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using NexaLibery_Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using NexaLibery_Backend.API.IAM.Domain.Model.Aggregates;
 
 namespace NexaLibery_Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -60,6 +61,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Podcast>().Property(m => m.pic).IsRequired().HasMaxLength(1000);
         builder.Entity<Podcast>().Property(m => m.url).IsRequired().HasMaxLength(1000);
         builder.Entity<Podcast>().Property(m => m.premium).IsRequired().HasMaxLength(1000);
+        
+        // IAM Context
+        
+        builder.Entity<User>().HasKey(u => u.Id);
+        builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<User>().Property(u => u.Username).IsRequired();
+        builder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
+        builder.Entity<User>().Property(u => u.Email).IsRequired();
+        builder.Entity<User>().Property(u => u.Description).IsRequired();
+        builder.Entity<User>().Property(u => u.BornDate).IsRequired();
+        builder.Entity<User>().Property(u => u.CardNumber).IsRequired();
+        builder.Entity<User>().Property(u => u.Photo).IsRequired();
+        
         
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
