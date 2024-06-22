@@ -19,7 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="IAM\Infrastructure\" />
+      <Folder Include="IAM\Infrastructure\Pipeline\" />
+      <Folder Include="IAM\Infrastructure\Tokens\" />
       <Folder Include="IAM\Interfaces\" />
     </ItemGroup>
 
