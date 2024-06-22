@@ -7,6 +7,18 @@ using NexaLibery_Backend.API.Shared.Domain.Repositories;
 using NexaLibery_Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using NexaLibery_Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using NexaLibery_Backend.API.Shared.Interfaces.ASP.Configuration;
+using NexaLibery_Backend.API.IAM.Application.Internal.CommandServices;
+using NexaLibery_Backend.API.IAM.Application.Internal.OutboundServices;
+using NexaLibery_Backend.API.IAM.Application.Internal.QueryServices;
+using NexaLibery_Backend.API.IAM.Domain.Repositories;
+using NexaLibery_Backend.API.IAM.Domain.Services;
+using NexaLibery_Backend.API.IAM.Infrastructure.Persistence.EFC.Repositories;
+using NexaLibery_Backend.API.IAM.Infrastructure.Tokens.JWT.Configuration;
+using NexaLibery_Backend.API.IAM.Infrastructure.Tokens.JWT.Services;
+using NexaLibery_Backend.API.IAM.Interfaces.ACL;
+using NexaLibery_Backend.API.IAM.Interfaces.ACL.Services;
+using NexaLibery_Backend.API.IAM.Infrastructure.Hashing.BCrypt.Services;
+using NexaLibery_Backend.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -84,6 +96,30 @@ builder.Services.AddSwaggerGen(
                 }
             });
         c.EnableAnnotations();
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "bearer"
+        });
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Id = "Bearer",
+                        Type = ReferenceType.SecurityScheme
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+
     });
 
 // Configure Lowercase URLs
@@ -107,6 +143,18 @@ builder.Services.AddScoped<IPodcastRepository, PodcastRepository>();
 builder.Services.AddScoped<IPodcastCommandService, PodcastCommandService>();
 builder.Services.AddScoped<IPodcastQueryService, PodcastQueryService>();
 
+// IAM Bounded Context Injection Configuration
+
+// TokenSettings Configuration
+
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
 // CORS Configuration
 builder.Services.AddCors(options =>
@@ -137,6 +185,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowAll");
+
+// Add Authorization Middleware to Pipeline
+app.UseRequestAuthorization();
 
 app.UseHttpsRedirection();
 
