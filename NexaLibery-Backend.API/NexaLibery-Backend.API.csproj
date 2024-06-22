@@ -18,9 +18,4 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="IAM\Interfaces\REST\Resources\" />
-      <Folder Include="IAM\Interfaces\REST\Transform\" />
-    </ItemGroup>
-
 </Project>
