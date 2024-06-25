@@ -64,6 +64,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         // IAM Context
         
+        builder.Entity<User>().ToTable("User");
         builder.Entity<User>().HasKey(u => u.Id);
         builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<User>().Property(u => u.Username).IsRequired();
