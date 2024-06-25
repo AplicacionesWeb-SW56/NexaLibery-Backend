@@ -1,9 +1,9 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc;
 using NexaLibery_Backend.API.IAM.Domain.Services;
 using NexaLibery_Backend.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
 using NexaLibery_Backend.API.IAM.Interfaces.REST.Resources;
 using NexaLibery_Backend.API.IAM.Interfaces.REST.Transform;
-using Microsoft.AspNetCore.Mvc;
 
 namespace NexaLibery_Backend.API.IAM.Interfaces.REST;
 
@@ -31,10 +31,21 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SignIn([FromBody] SignInResource signInResource)
     {
-        var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(signInResource);
-        var authenticatedUser = await _userCommandService.Handle(signInCommand);
-        var resource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser.user, authenticatedUser.token);
-        return Ok(resource);
+        try
+        {
+            var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(
+                signInResource
+            );
+            var authenticatedUser = await _userCommandService.Handle(signInCommand);
+            var resource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(
+                authenticatedUser.user,
+                authenticatedUser.token
+            );
+            return Ok(resource);
+        }
+        catch (Exception e) {
+          return StatusCode(StatusCodes.Status400BadRequest, new { message = e.Message });
+        }
     }
 
     /**
@@ -48,8 +59,18 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SignUp([FromBody] SignUpResource signUpResource)
     {
-        var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(signUpResource);
+      try
+      {
+        var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(
+            signUpResource
+        );
         await _userCommandService.Handle(signUpCommand);
         return Ok(new { message = "User created successfully" });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(StatusCodes.Status400BadRequest, new { message = e.Message });
+      }
     }
 }
+

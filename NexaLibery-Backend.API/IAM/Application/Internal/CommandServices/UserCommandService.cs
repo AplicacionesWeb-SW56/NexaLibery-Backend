@@ -42,8 +42,8 @@ namespace NexaLibery_Backend.API.IAM.Application.Internal.CommandServices
          */
         public async Task Handle(SignUpCommand command)
         {
-            if (userRepository.ExistsByUsername(command.Username))
-                throw new Exception($"Username {command.Username} is already taken");
+            if (userRepository.ExistsByUsername(command.Email))
+                throw new Exception($"Email {command.Email} is already taken");
 
             var hashedPassword = hashingService.HashPassword(command.Password);
             var user = new User(command.Username, hashedPassword, command.Email, command.Description, command.CardNumber, command.BornDate, command.Photo);
