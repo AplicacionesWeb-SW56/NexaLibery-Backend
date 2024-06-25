@@ -19,6 +19,7 @@ using NexaLibery_Backend.API.IAM.Interfaces.ACL;
 using NexaLibery_Backend.API.IAM.Interfaces.ACL.Services;
 using NexaLibery_Backend.API.IAM.Infrastructure.Hashing.BCrypt.Services;
 using NexaLibery_Backend.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
+using NexaLibery_Backend.API.Shared.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -48,21 +49,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         var connectionString = builder.Configuration.GetConnectionString("ProductionConnection");
         if(connectionString == null) throw new Exception("No connection string found");
-        var GetFormatedString = ()=>{
-            string? host = DotNetEnv.Env.GetString("MYSQL_HOST") ?? Environment.GetEnvironmentVariable("MYSQL_HOST");
-            if(host == null) throw new Exception("No MYSQL_HOST found");
-            string? user = DotNetEnv.Env.GetString("MYSQL_USER") ?? Environment.GetEnvironmentVariable("MYSQL_USER");
-            if(user == null) throw new Exception("No MYSQL_USER found");
-            string? password = DotNetEnv.Env.GetString("MYSQL_PASSWORD") ?? Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
-            if(password == null) throw new Exception("No MYSQL_PASSWORD found");
-            string? database = DotNetEnv.Env.GetString("MYSQL_DATABASE") ?? Environment.GetEnvironmentVariable("MYSQL_DATABASE");
-            if(database == null) throw new Exception("No MYSQL_DATABASE found");
-            string? port = DotNetEnv.Env.GetString("MYSQL_PORT") ?? Environment.GetEnvironmentVariable("MYSQL_PORT");
-            if(port == null) throw new Exception("No MYSQL_PORT found");
-
-            return String.Format(connectionString, host, user, password, database, port);
-        };
-        connectionString = GetFormatedString();
+        connectionString = FormatConnectionStringFromEnv.FromEnvToConnectionString(connectionString);
         options
             .UseMySQL(connectionString)
             .LogTo(Console.WriteLine, LogLevel.Error)
